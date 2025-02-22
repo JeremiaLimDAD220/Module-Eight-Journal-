@@ -1,0 +1,121 @@
+
+// Project Three 
+// Jeremia Lim 
+// 02/19/2024
+//PURPOSE: Grocery Tracking Program 
+
+#include <iostream>
+#include <fstream>
+#include <map>
+#include <string>
+#include <iomanip>
+
+using namespace std;
+
+// GroceryTracker class definition
+class GroceryTracker {
+private:
+    map<string, int> itemFrequency;
+
+public:
+    // Load data from file and calculate item frequencies
+    void loadData(const string& filename) {
+        ifstream inputFile(filename);
+        if (!inputFile) {
+            cout << "Error: File not found!" << endl;
+            return;
+        }
+
+        string item;
+        while (inputFile >> item) {
+            itemFrequency[item]++;
+        }
+
+        inputFile.close();
+    }
+
+    // Save item frequencies to a backup file
+    void saveToFile(const string& filename) {
+        ofstream outputFile(filename);
+        for (const auto& pair : itemFrequency) {
+            outputFile << pair.first << " " << pair.second << endl;
+        }
+        outputFile.close();
+    }
+
+    // Search for an item's frequency
+    void searchItem(const string& item) {
+        if (itemFrequency.find(item) != itemFrequency.end()) {
+            cout << item << " was purchased " << itemFrequency[item] << " times." << endl;
+        }
+        else {
+            cout << item << " was not found in the records." << endl;
+        }
+    }
+
+    // Display all items with their frequencies
+    void displayFrequencies() {
+        cout << "Item Frequencies:" << endl;
+        for (const auto& pair : itemFrequency) {
+            cout << pair.first << " " << pair.second << endl;
+        }
+    }
+
+    // Display a histogram of item frequencies
+    void displayHistogram() {
+        cout << "Item Histogram:" << endl;
+        for (const auto& pair : itemFrequency) {
+            cout << pair.first << " ";
+            for (int i = 0; i < pair.second; ++i) {
+                cout << "*";
+            }
+            cout << endl;
+        }
+    }
+};
+
+// Main function
+int main() {
+    GroceryTracker tracker;
+    string inputFile = "CS210_Project_Three_Input_File.txt";
+    string backupFile = "frequency.dat";
+
+    // Load data from file and save to backup file
+    tracker.loadData(inputFile);
+    tracker.saveToFile(backupFile);
+
+    int choice;
+    do {
+        // Display menu
+        cout << "\nMenu:" << endl;
+        cout << "1. Search for an item" << endl;
+        cout << "2. Display item frequencies" << endl;
+        cout << "3. Display histogram" << endl;
+        cout << "4. Exit" << endl;
+        cout << "Enter your choice: ";
+        cin >> choice;
+
+        switch (choice) {
+        case 1: {
+            string item;
+            cout << "Enter the item to search for: ";
+            cin >> item;
+            tracker.searchItem(item);
+            break;
+        }
+        case 2:
+            tracker.displayFrequencies();
+            break;
+        case 3:
+            tracker.displayHistogram();
+            break;
+        case 4:
+            cout << "Exiting program..." << endl;
+            break;
+        default:
+            cout << "Invalid choice. Please try again." << endl;
+        }
+    } while (choice != 4);
+
+    return 0;
+}
